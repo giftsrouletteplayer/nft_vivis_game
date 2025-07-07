@@ -2,20 +2,19 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Слот-Рулетка Казино</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Элитная Слот-Рулетка Казино</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         body {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background: linear-gradient(135deg, #1a0630, #2d0b5e, #0e0725);
             color: white;
             min-height: 100vh;
             display: flex;
@@ -24,68 +23,179 @@
             padding: 20px;
             text-align: center;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(106, 27, 154, 0.2) 0%, transparent 70%);
+            z-index: -1;
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .background-lights {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .light-beam {
+            position: absolute;
+            width: 200%;
+            height: 20px;
+            background: linear-gradient(90deg, transparent, rgba(186, 104, 200, 0.3), transparent);
+            transform: rotate(-45deg);
+            animation: beamMove 15s linear infinite;
+        }
+
+        .light-beam:nth-child(2) {
+            top: 30%;
+            animation-delay: -5s;
+        }
+
+        .light-beam:nth-child(3) {
+            top: 60%;
+            animation-delay: -10s;
+        }
+
+        @keyframes beamMove {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
         .container {
-            max-width: 100%;
+            max-width: 1000px;
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 0 10px;
+            z-index: 10;
         }
 
         header {
             margin-bottom: 20px;
             width: 100%;
             text-align: center;
+            padding: 15px;
+            background: rgba(74, 20, 140, 0.5);
+            border-radius: 15px;
+            border: 1px solid rgba(156, 39, 176, 0.5);
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.5);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(156, 39, 176, 0.3), transparent);
+            animation: headerGlow 3s linear infinite;
+        }
+
+        @keyframes headerGlow {
+            100% { left: 100%; }
         }
 
         h1 {
-            font-size: clamp(24px, 6vw, 32px);
+            font-size: 36px;
             margin-bottom: 10px;
             color: #ffd700;
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5),
                          0 0 20px rgba(255, 215, 0, 0.3),
                          0 0 30px rgba(255, 215, 0, 0.2);
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+        }
+
+        .bet-selection {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .bet-btn {
+            background: rgba(81, 45, 168, 0.7);
+            color: #ddd;
+            border: none;
+            padding: 12px 20px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            border: 1px solid rgba(156, 39, 176, 0.5);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .bet-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(156, 39, 176, 0.4);
+        }
+
+        .bet-btn.active {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+            color: white;
+            border: 1px solid #ffd700;
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.7);
+            transform: scale(1.05);
         }
 
         .info {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 15px;
+            background: rgba(74, 20, 140, 0.5);
+            padding: 20px;
             border-radius: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             width: 100%;
-            max-width: 500px;
             border: 2px solid #ffd700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-            font-size: clamp(14px, 3vw, 16px);
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.5);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
         }
 
-        /* Контейнер для слотов */
         .slots-container {
             position: relative;
             width: 100%;
-            max-width: 500px;
-            height: clamp(180px, 40vw, 250px);
+            height: 180px;
             overflow: hidden;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             border-radius: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            padding-top: 15px;
+            background: rgba(74, 20, 140, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            padding-top: 20px;
+            perspective: 1000px;
+            border: 2px solid rgba(156, 39, 176, 0.5);
         }
 
         .pointer {
             position: absolute;
-            top: -20px;
+            top: -25px;
             left: 50%;
             transform: translateX(-50%);
-            width: 35px;
-            height: 35px;
+            width: 50px;
+            height: 50px;
             z-index: 100;
-            filter: drop-shadow(0 0 10px gold);
+            filter: drop-shadow(0 0 15px gold);
         }
 
         .pointer svg {
@@ -100,44 +210,67 @@
             position: absolute;
             left: 0;
             transition-timing-function: cubic-bezier(0.1, 0.8, 0.2, 1);
+            animation: idleSpin 60s linear infinite;
+        }
+
+        @keyframes idleSpin {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
         }
 
         .slot {
-            width: clamp(80px, 20vw, 100px);
-            height: 100%;
+            width: 120px;
+            height: 120px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: clamp(24px, 6vw, 32px);
+            font-size: 36px;
             font-weight: bold;
             flex-shrink: 0;
             color: white;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
             border: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease, filter 0.3s ease;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7);
+            transition: transform 0.5s ease, filter 0.5s ease;
+            transform-style: preserve-3d;
+            transform: rotateX(10deg);
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            margin: 0 5px;
+        }
+
+        .slot.nft {
+            background: transparent;
+            padding: 5px;
+        }
+
+        .nft-image-slot {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
         }
 
         .spin-btn {
-            background: linear-gradient(135deg, #ff9d00, #ff0000);
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
             color: white;
             border: none;
-            padding: clamp(12px, 4vw, 18px) clamp(30px, 10vw, 50px);
-            font-size: clamp(18px, 4.5vw, 22px);
+            padding: 20px 60px;
+            font-size: 24px;
             border-radius: 50px;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 20px;
             font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3),
-                        0 0 25px rgba(255, 157, 0, 0.5);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4),
+                        0 0 30px rgba(156, 39, 176, 0.6);
             transition: all 0.3s ease;
             width: 90%;
-            max-width: 300px;
-            letter-spacing: 1px;
+            max-width: 350px;
+            letter-spacing: 1.5px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
             position: relative;
             overflow: hidden;
             z-index: 1;
+            border: 1px solid rgba(255, 215, 0, 0.5);
         }
 
         .spin-btn::before {
@@ -158,12 +291,8 @@
 
         .spin-btn:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4),
-                        0 0 35px rgba(255, 157, 0, 0.7);
-        }
-
-        .spin-btn:active {
-            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5),
+                        0 0 40px rgba(156, 39, 176, 0.8);
         }
 
         .spin-btn:disabled {
@@ -173,62 +302,16 @@
             cursor: not-allowed;
         }
 
-        .result {
-            margin-top: 20px;
-            font-size: clamp(18px, 4.5vw, 26px);
-            font-weight: bold;
-            min-height: 40px;
-            padding: clamp(10px, 3vw, 15px) clamp(15px, 5vw, 30px);
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 15px;
-            width: 100%;
-            max-width: 500px;
-            border: 2px solid #ffd700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .sector-info {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .sector-item {
-            display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 8px 15px;
-            border-radius: 30px;
-            font-size: clamp(12px, 3vw, 16px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
-        }
-
-        .color-box {
-            width: 20px;
-            height: 20px;
-            border-radius: 5px;
-            margin-right: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-        }
-
         footer {
-            margin-top: auto;
-            padding-top: 20px;
+            margin-top: 20px;
+            padding: 20px;
             color: #aaa;
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: 16px;
             width: 100%;
-            max-width: 500px;
+            background: rgba(74, 20, 140, 0.5);
+            border-radius: 15px;
+            border: 1px solid rgba(156, 39, 176, 0.5);
+            box-shadow: 0 0 15px rgba(156, 39, 176, 0.3);
         }
 
         .loader {
@@ -238,7 +321,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -246,24 +329,22 @@
 
         .loader-content {
             background: linear-gradient(135deg, #1a1a2e, #16213e);
-            padding: 30px;
-            border-radius: 15px;
+            padding: 50px;
+            border-radius: 25px;
             text-align: center;
-            border: 2px solid #ffd700;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
-            width: 90%;
-            max-width: 300px;
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
         }
 
         .spinner {
-            border: 5px solid rgba(255, 255, 255, 0.1);
-            border-top: 5px solid #ffd700;
+            border: 6px solid rgba(255, 255, 255, 0.1);
+            border-top: 6px solid #ffd700;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 80px;
+            height: 80px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            margin: 0 auto 30px;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
         }
 
         @keyframes spin {
@@ -276,23 +357,22 @@
         }
 
         @keyframes winPulse {
-            from { transform: scale(1); box-shadow: 0 0 10px gold; }
-            to { transform: scale(1.05); box-shadow: 0 0 30px gold; }
+            from { transform: scale(1); box-shadow: 0 0 15px gold; }
+            to { transform: scale(1.05); box-shadow: 0 0 40px gold; }
         }
 
-        /* Центральная линия для точного позиционирования */
         .center-line {
             position: absolute;
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 2px;
+            width: 3px;
             height: 100%;
-            background: rgba(255, 215, 0, 0.5);
+            background: rgba(255, 215, 0, 0.7);
             z-index: 50;
+            box-shadow: 0 0 15px gold;
         }
 
-        /* Эффект частиц */
         .particles {
             position: fixed;
             top: 0;
@@ -305,8 +385,8 @@
 
         .particle {
             position: absolute;
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             background: gold;
             border-radius: 50%;
             animation: particleMove 1s ease-out forwards;
@@ -324,7 +404,6 @@
             }
         }
 
-        /* Эффект вибрации */
         @keyframes vibrate {
             0% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
@@ -337,47 +416,185 @@
             animation: vibrate 0.3s ease-in-out;
         }
 
-        /* Адаптация для очень маленьких экранов */
-        @media (max-width: 350px) {
-            .sector-item {
-                padding: 6px 10px;
-            }
-            
-            .color-box {
-                width: 15px;
-                height: 15px;
-                margin-right: 5px;
-            }
-            
-            .slots-container {
-                height: 150px;
-            }
+        /* Модальное окно победы */
+        .win-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
 
-        /* Портретная ориентация */
-        @media (orientation: portrait) {
-            .container {
-                padding-top: 10px;
-            }
+        .win-content {
+            background: linear-gradient(135deg, #1a0630, #2d0b5e);
+            padding: 40px;
+            border-radius: 25px;
+            text-align: center;
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.6);
+            max-width: 90%;
+            width: 500px;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Ландшафтная ориентация */
-        @media (orientation: landscape) {
-            .container {
-                padding-top: 5px;
+        .win-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+            animation: rotate 15s linear infinite;
+            z-index: -1;
+        }
+
+        .win-title {
+            font-size: 42px;
+            color: #ffd700;
+            margin-bottom: 25px;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+        }
+
+        .win-prize {
+            font-size: 36px;
+            margin-bottom: 30px;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .nft-image {
+            width: 250px;
+            height: 250px;
+            border-radius: 15px;
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            margin: 20px auto;
+            background-size: cover;
+            background-position: center;
+            display: none;
+        }
+
+        .coins-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(74, 20, 140, 0.5);
+            border-radius: 15px;
+            border: 1px solid rgba(156, 39, 176, 0.5);
+            box-shadow: 0 0 15px rgba(156, 39, 176, 0.3);
+        }
+
+        .coins-icon {
+            font-size: 32px;
+            color: #ffd700;
+        }
+
+        .coins-amount {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+        }
+
+        /* Адаптивные стили */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 28px;
             }
-            
-            .slots-container {
-                height: clamp(150px, 30vh, 200px);
+
+            .bet-btn {
+                padding: 10px 15px;
+                min-width: 90px;
+                font-size: 16px;
             }
-            
+
+            .slot {
+                width: 90px;
+                height: 90px;
+                font-size: 28px;
+            }
+
             .spin-btn {
-                margin-top: 10px;
+                padding: 16px 40px;
+                font-size: 20px;
+            }
+
+            .win-title {
+                font-size: 36px;
+            }
+
+            .win-prize {
+                font-size: 28px;
+            }
+
+            .nft-image {
+                width: 200px;
+                height: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            .bet-selection {
+                gap: 8px;
+            }
+
+            .bet-btn {
+                padding: 8px 12px;
+                min-width: 80px;
+                font-size: 14px;
+            }
+
+            .slot {
+                width: 70px;
+                height: 70px;
+                font-size: 24px;
+            }
+
+            .spin-btn {
+                padding: 14px 30px;
+                font-size: 18px;
+            }
+
+            .win-title {
+                font-size: 32px;
+            }
+
+            .win-prize {
+                font-size: 24px;
+            }
+
+            .nft-image {
+                width: 180px;
+                height: 180px;
+            }
+
+            .coins-display {
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
+<div class="background-lights">
+    <div class="light-beam"></div>
+    <div class="light-beam"></div>
+    <div class="light-beam"></div>
+</div>
+
 <div class="loader" id="loader">
     <div class="loader-content">
         <div class="spinner"></div>
@@ -385,17 +602,36 @@
     </div>
 </div>
 
+<div class="win-modal" id="winModal">
+    <div class="win-content">
+        <div class="win-title" id="winTitle">ПОБЕДА!</div>
+        <div class="win-prize" id="winPrize"></div>
+        <div class="nft-image" id="nftImage"></div>
+    </div>
+</div>
+
 <div class="particles" id="particles"></div>
 
 <div class="container">
     <header>
-        <h1>🎰 СЛОТ-РУЛЕТКА КАЗИНО</h1>
+        <h1>🎰 ЭЛИТНАЯ РУЛЕТКА КАЗИНО</h1>
         <p>Крутите слоты и выигрывайте призы!</p>
     </header>
 
+    <div class="coins-display">
+        <div class="coins-icon">🪙</div>
+        <div class="coins-amount">Ваши звёзды: <span id="coinsCount">5000</span></div>
+    </div>
+
+    <div class="bet-selection">
+        <button class="bet-btn active" data-bet="100">100 🪙</button>
+        <button class="bet-btn" data-bet="1000">1000 🪙</button>
+        <button class="bet-btn" data-bet="10000">10000 🪙</button>
+    </div>
+
     <div class="info">
-        <p>Стоимость вращения: <strong>100 звёзд</strong></p>
         <p>Призы: 15, 25, 50, 100 звёзд или NFT!</p>
+        <p style="margin-top: 10px; color: #ffd700; font-size: 14px;">Секторы расположены в случайном порядке при каждой загрузке!</p>
     </div>
 
     <div class="slots-container">
@@ -405,37 +641,10 @@
             </svg>
         </div>
         <div class="center-line"></div>
-        <div class="slots-track" id="slotsTrack">
-            <!-- Слоты будут созданы с помощью JavaScript -->
-        </div>
+        <div class="slots-track" id="slotsTrack"></div>
     </div>
 
     <button class="spin-btn" id="spinBtn">🎡 КРУТИТЬ РУЛЕТКУ</button>
-
-    <div class="result" id="result"></div>
-
-    <div class="sector-info">
-        <div class="sector-item">
-            <div class="color-box" style="background: linear-gradient(135deg, #ff6b6b, #ff0000);"></div>
-            <span>15 звёзд</span>
-        </div>
-        <div class="sector-item">
-            <div class="color-box" style="background: linear-gradient(135deg, #4ecdc4, #00a8ff);"></div>
-            <span>25 звёзд</span>
-        </div>
-        <div class="sector-item">
-            <div class="color-box" style="background: linear-gradient(135deg, #1a535c, #2a9d8f);"></div>
-            <span>50 звёзд</span>
-        </div>
-        <div class="sector-item">
-            <div class="color-box" style="background: linear-gradient(135deg, #ffd166, #ff9e00);"></div>
-            <span>100 звёзд</span>
-        </div>
-        <div class="sector-item">
-            <div class="color-box" style="background: linear-gradient(135deg, #06d6a0, #00d084);"></div>
-            <span>NFT</span>
-        </div>
-    </div>
 
     <footer>
         <p>Удачи! Ваш выигрыш будет автоматически зачислен на баланс</p>
@@ -447,36 +656,214 @@
         const loader = document.getElementById('loader');
         const slotsTrack = document.getElementById('slotsTrack');
         const spinBtn = document.getElementById('spinBtn');
-        const resultEl = document.getElementById('result');
         const particlesContainer = document.getElementById('particles');
+        const winModal = document.getElementById('winModal');
+        const winPrize = document.getElementById('winPrize');
+        const winTitle = document.getElementById('winTitle');
+        const nftImage = document.getElementById('nftImage');
+        const coinsCount = document.getElementById('coinsCount');
+        const betButtons = document.querySelectorAll('.bet-btn');
+
+        // Текущая ставка
+        let currentBet = 100;
+        let coins = 5000;
+        let isSpinning = false;
+        let isModalOpen = false;
+        let lastUsedNFTs = {};
+        let winSlotElement = null;
+        let animationFrameId = null;
+        let winModalTimeout = null;
+
+        // NFT изображения для разных ставок
+        const nftImages = {
+            100: [
+                "https://picsum.photos/id/10/200/200",
+                "https://picsum.photos/id/11/200/200",
+                "https://picsum.photos/id/12/200/200",
+                "https://picsum.photos/id/13/200/200",
+                "https://picsum.photos/id/14/200/200",
+                "https://picsum.photos/id/15/200/200",
+                "https://picsum.photos/id/16/200/200",
+                "https://picsum.photos/id/17/200/200"
+            ],
+            1000: [
+                "https://picsum.photos/id/18/200/200",
+                "https://picsum.photos/id/19/200/200",
+                "https://picsum.photos/id/20/200/200",
+                "https://picsum.photos/id/21/200/200",
+                "https://picsum.photos/id/22/200/200",
+                "https://picsum.photos/id/23/200/200",
+                "https://picsum.photos/id/24/200/200",
+                "https://picsum.photos/id/25/200/200"
+            ],
+            10000: [
+                "https://picsum.photos/id/26/200/200",
+                "https://picsum.photos/id/27/200/200",
+                "https://picsum.photos/id/28/200/200",
+                "https://picsum.photos/id/29/200/200",
+                "https://picsum.photos/id/30/200/200",
+                "https://picsum.photos/id/31/200/200",
+                "https://picsum.photos/id/32/200/200",
+                "https://picsum.photos/id/33/200/200"
+            ]
+        };
+
+        // Секторы рулетки для разных ставок
+        const sectors = {
+            100: [
+                { value: "15", type: "coins" },
+                { value: "25", type: "coins" },
+                { value: "50", type: "coins" },
+                { value: "100", type: "coins" },
+                { value: "NFT", type: "nft" },
+                { value: "NFT", type: "nft" },
+                { value: "NFT", type: "nft" }
+            ],
+            1000: [
+                { value: "15", type: "coins" },
+                { value: "25", type: "coins" },
+                { value: "50", type: "coins" },
+                { value: "100", type: "coins" },
+                { value: "NFT", type: "nft" },
+                { value: "NFT", type: "nft" },
+                { value: "NFT", type: "nft" }
+            ],
+            10000: [
+                { value: "15", type: "coins" },
+                { value: "25", type: "coins" },
+                { value: "50", type: "coins" },
+                { value: "100", type: "coins" },
+                { value: "NFT", type: "nft" },
+                { value: "NFT", type: "nft" },
+                { value: "NFT", type: "nft" }
+            ]
+        };
 
         // Показать загрузчик
         loader.style.display = 'flex';
 
-        // Секторы рулетки
-        const sectors = [
-            { value: "15", color: "linear-gradient(135deg, #ff6b6b, #ff0000)" },
-            { value: "25", color: "linear-gradient(135deg, #4ecdc4, #00a8ff)" },
-            { value: "50", color: "linear-gradient(135deg, #1a535c, #2a9d8f)" },
-            { value: "100", color: "linear-gradient(135deg, #ffd166, #ff9e00)" },
-            { value: "NFT", color: "linear-gradient(135deg, #06d6a0, #00d084)" }
-        ];
-
-        // Создаем слоты (повторяем секторы 20 раз для эффекта бесконечности)
-        for (let i = 0; i < 20; i++) {
-            sectors.forEach(sector => {
-                const slot = document.createElement('div');
-                slot.className = 'slot';
-                slot.textContent = sector.value;
-                slot.style.background = sector.color;
-                slotsTrack.appendChild(slot);
-            });
+        // Функция для перемешивания массива (алгоритм Фишера-Йейтса)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
         }
 
-        // Скрыть загрузчик после создания рулетки
+        // Создать рулетку
+        function createSlots() {
+            slotsTrack.innerHTML = '';
+
+            // Создаем копию секторов для текущей ставки и перемешиваем их
+            const shuffledSectors = shuffleArray([...sectors[currentBet]]);
+            const slotSets = 40;
+
+            if (!lastUsedNFTs[currentBet]) {
+                lastUsedNFTs[currentBet] = [];
+            }
+
+            for (let i = 0; i < slotSets; i++) {
+                shuffledSectors.forEach((sector, sectorIndex) => {
+                    const slot = document.createElement('div');
+                    slot.className = 'slot';
+                    slot.dataset.index = sectorIndex;
+                    slot.dataset.set = i;
+
+                    // Сохраняем данные сектора
+                    slot.dataset.value = sector.value;
+                    slot.dataset.type = sector.type;
+
+                    if (sector.type === "nft") {
+                        slot.classList.add('nft');
+                        const img = document.createElement('img');
+                        img.className = 'nft-image-slot';
+
+                        // Выбор уникальной картинки
+                        let randomImage;
+                        let attempts = 0;
+
+                        do {
+                            randomImage = nftImages[currentBet][Math.floor(Math.random() * nftImages[currentBet].length)];
+                            attempts++;
+
+                            if (attempts > 50) {
+                                lastUsedNFTs[currentBet] = [];
+                                break;
+                            }
+                        } while (lastUsedNFTs[currentBet].includes(randomImage));
+
+                        lastUsedNFTs[currentBet].push(randomImage);
+                        if (lastUsedNFTs[currentBet].length > 10) {
+                            lastUsedNFTs[currentBet].shift();
+                        }
+
+                        img.src = randomImage;
+                        slot.appendChild(img);
+                    } else {
+                        slot.textContent = sector.value;
+                    }
+
+                    slotsTrack.appendChild(slot);
+                });
+            }
+
+            // Сброс позиции трека
+            slotsTrack.style.transform = `translateX(0)`;
+        }
+
+        // Запустить фоновое вращение
+        function startIdleAnimation() {
+            slotsTrack.style.animation = 'none';
+            setTimeout(() => {
+                slotsTrack.style.animation = 'idleSpin 60s linear infinite';
+            }, 10);
+        }
+
+        // Остановить фоновое вращение
+        function stopIdleAnimation() {
+            slotsTrack.style.animation = 'none';
+        }
+
+        // Сбросить стили всех слотов
+        function resetAllSlots() {
+            const slots = document.querySelectorAll('.slot');
+            slots.forEach(slot => {
+                slot.style.transform = '';
+                slot.style.filter = '';
+                slot.style.transition = '';
+                slot.classList.remove('win-animation');
+            });
+
+            if (winSlotElement) {
+                winSlotElement.style.transform = '';
+                winSlotElement.style.filter = '';
+                winSlotElement = null;
+            }
+        }
+
+        // Обработчики выбора ставки
+        betButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (isSpinning || isModalOpen) return;
+
+                betButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentBet = parseInt(btn.dataset.bet);
+
+                createSlots();
+                setTimeout(startIdleAnimation, 100);
+            });
+        });
+
+        // Инициализация рулетки
+        createSlots();
+
+        // Скрыть загрузчик
         setTimeout(() => {
             loader.style.display = 'none';
-        }, 500);
+            startIdleAnimation();
+        }, 800);
 
         // Создать эффект частиц
         function createParticles(x, y, count, color) {
@@ -487,9 +874,8 @@
                 particle.style.left = `${x}px`;
                 particle.style.top = `${y}px`;
 
-                // Случайное направление и расстояние
                 const angle = Math.random() * Math.PI * 2;
-                const distance = 50 + Math.random() * 100;
+                const distance = 50 + Math.random() * 150;
                 const tx = Math.cos(angle) * distance;
                 const ty = Math.sin(angle) * distance;
 
@@ -498,156 +884,196 @@
 
                 particlesContainer.appendChild(particle);
 
-                // Удалить частицу после анимации
                 setTimeout(() => {
                     particle.remove();
                 }, 1000);
             }
         }
 
+        // Показать окно победы
+        function showWinModal(winSector, winSlot) {
+            isModalOpen = true;
+
+            if (winSector.type === "nft") {
+                const img = winSlot.querySelector('img');
+                if (img) {
+                    nftImage.style.backgroundImage = `url(${img.src})`;
+                    nftImage.style.display = 'block';
+                }
+                winPrize.textContent = "Редкий NFT!";
+                winTitle.textContent = "NFT НАЙДЕН!";
+            } else {
+                nftImage.style.display = 'none';
+                winPrize.textContent = `Вы выиграли ${winSector.value} звёзд!`;
+                winTitle.textContent = "ПОБЕДА!";
+            }
+
+            winModal.style.display = 'flex';
+
+            if (winSector.type === "coins") {
+                coins += parseInt(winSector.value);
+            } else {
+                coins += 500;
+            }
+            coinsCount.textContent = coins;
+
+            // Установка таймера для закрытия окна выигрыша
+            winModalTimeout = setTimeout(closeWinModal, 3000);
+        }
+
+        // Закрыть окно победы
+        function closeWinModal() {
+            if (winModalTimeout) {
+                clearTimeout(winModalTimeout);
+                winModalTimeout = null;
+            }
+
+            winModal.style.display = 'none';
+            resetAllSlots();
+
+            // Пересоздаем слоты для сброса позиции
+            createSlots();
+            setTimeout(startIdleAnimation, 100);
+
+            // Разблокировать кнопки после закрытия модального окна
+            isModalOpen = false;
+            spinBtn.disabled = false;
+            betButtons.forEach(btn => btn.disabled = false);
+        }
+
+        // Обработчик закрытия модального окна по клику
+        winModal.addEventListener('click', closeWinModal);
+
+        // Плавная функция замедления
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+
         // Функция для вращения слотов
         function spinSlots() {
-            spinBtn.disabled = true;
-            resultEl.textContent = "";
-            resultEl.classList.remove('win-animation');
+            if (isSpinning || isModalOpen) return;
 
-            // Добавить эффект вибрации кнопки
+            if (coins < currentBet) {
+                alert("Недостаточно звёзд!");
+                return;
+            }
+
+            isSpinning = true;
+            spinBtn.disabled = true;
+            betButtons.forEach(btn => btn.disabled = true);
+
+            // Сбросить предыдущие стили
+            resetAllSlots();
+
+            coins -= currentBet;
+            coinsCount.textContent = coins;
+
+            stopIdleAnimation();
+
             spinBtn.classList.add('vibrate');
             setTimeout(() => spinBtn.classList.remove('vibrate'), 300);
 
-            // Случайный выбор сектора
-            const winIndex = Math.floor(Math.random() * sectors.length);
-            const winSector = sectors[winIndex];
+            const containerRect = document.querySelector('.slots-container').getBoundingClientRect();
+            const slotElement = document.querySelector('.slot');
+            const slotStyle = getComputedStyle(slotElement);
+            const marginLeft = parseFloat(slotStyle.marginLeft);
+            const marginRight = parseFloat(slotStyle.marginRight);
+            const totalSlotWidth = slotElement.offsetWidth + marginLeft + marginRight;
+            const containerWidth = containerRect.width;
 
-            // Начальная позиция
-            const startPosition = 0;
-
-            // Рассчитываем конечную позицию
-            const containerWidth = document.querySelector('.slots-container').offsetWidth;
-            const slotWidth = document.querySelector('.slot').offsetWidth;
-
-            // Выбираем случайный набор секторов для остановки
+            // Расчет конечной позиции
             const cycles = 15 + Math.floor(Math.random() * 5);
-            const targetSlotIndex = winIndex + cycles * sectors.length;
-
-            // Центрируем выигрышный слот под указателем
-            const targetPosition = targetSlotIndex * slotWidth - (containerWidth / 2 - slotWidth / 2);
+            const sectorCount = sectors[currentBet].length;
+            const winIndex = Math.floor(Math.random() * sectorCount);
+            const targetPosition = (cycles * sectorCount + winIndex) * totalSlotWidth - (containerWidth / 2 - totalSlotWidth / 2);
 
             // Анимация вращения
             let startTime = null;
-            const duration = 12000; // 12 секунд
+            const duration = 6000;
 
-            // Эффект размытия во время вращения
-            slotsTrack.style.filter = "blur(2px)";
+            // Сохраняем начальную позицию (всегда 0)
+            const startPosition = 0;
 
-            // Создать частицы при старте
-            const containerRect = document.querySelector('.slots-container').getBoundingClientRect();
+            slotsTrack.style.filter = "blur(3px)";
+
             createParticles(
-                containerRect.left + containerRect.width / 2,
+                containerRect.left + containerWidth / 2,
                 containerRect.top + containerRect.height / 2,
-                30,
+                50,
                 '#ffd700'
             );
 
-            // Плавное замедление в конце
-            function easeOutExpo(t) {
-                return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+            // Отменяем предыдущий requestAnimationFrame
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
             }
 
+            // Функция анимации
             function animate(currentTime) {
                 if (!startTime) startTime = currentTime;
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                const easedProgress = easeOutExpo(progress);
 
+                // Используем плавное замедление
+                const easedProgress = easeOutCubic(progress);
                 const newPosition = startPosition + (targetPosition - startPosition) * easedProgress;
 
-                // Применяем движение
+                // Обновляем позицию трека
                 slotsTrack.style.transform = `translateX(-${newPosition}px)`;
 
-                // Создаем частицы во время движения
-                if (Math.random() < 0.1) {
+                // Эффект частиц во время вращения
+                if (Math.random() < 0.2 && progress < 0.95) {
                     createParticles(
-                        containerRect.left + containerRect.width / 2,
+                        containerRect.left + containerWidth / 2,
                         containerRect.top + containerRect.height / 2,
-                        3,
-                        winSector.color.split('(')[1].split(')')[0].split(',')[0]
+                        5,
+                        '#ffd700'
                     );
                 }
 
-                // Продолжаем анимацию
                 if (progress < 1) {
-                    requestAnimationFrame(animate);
+                    animationFrameId = requestAnimationFrame(animate);
                 } else {
-                    // Анимация завершена
+                    // Финализация позиции
+                    slotsTrack.style.transform = `translateX(-${targetPosition}px)`;
+
+                    // Точное вычисление выигрышного слота по индексу
+                    const slotIndex = Math.floor((targetPosition + containerWidth / 2) / totalSlotWidth) % slotsTrack.children.length;
+                    const centerSlot = slotsTrack.children[slotIndex];
+
+                    const actualWinSector = {
+                        value: centerSlot.dataset.value,
+                        type: centerSlot.dataset.type
+                    };
+
+                    // Сохраняем элемент выигравшего слота
+                    winSlotElement = centerSlot;
+
+                    // Применяем стили к выигравшему слоту
+                    centerSlot.style.transform = "scale(1.15)";
+                    centerSlot.style.filter = "drop-shadow(0 0 25px gold) brightness(1.3)";
+                    centerSlot.style.transition = "all 0.5s ease";
+
                     slotsTrack.style.filter = "none";
 
-                    // Эффект для выигравшего слота
-                    const centerSlot = document.elementFromPoint(
-                        containerRect.left + containerRect.width / 2,
-                        containerRect.top + containerRect.height / 2
+                    createParticles(
+                        containerRect.left + containerWidth / 2,
+                        containerRect.top + containerRect.height / 2,
+                        100,
+                        '#ffd700'
                     );
 
-                    if (centerSlot && centerSlot.classList.contains('slot')) {
-                        centerSlot.style.transform = "scale(1.1)";
-                        centerSlot.style.filter = "drop-shadow(0 0 15px gold)";
-                        centerSlot.style.transition = "all 0.5s ease";
-
-                        // Создать частицы победы
-                        createParticles(
-                            containerRect.left + containerRect.width / 2,
-                            containerRect.top + containerRect.height / 2,
-                            50,
-                            winSector.color.split('(')[1].split(')')[0].split(',')[0]
-                        );
-                    }
-
-                    resultEl.textContent = winSector.value === "NFT"
-                        ? "🎉 ПОЗДРАВЛЯЕМ! ВЫ ВЫИГРАЛИ NFT!"
-                        : `🎉 ПОЗДРАВЛЯЕМ! ВЫ ВЫИГРАЛИ ${winSector.value} ЗВЁЗД!`;
-
-                    resultEl.classList.add('win-animation');
-
-                    // Отправляем результат в бот
-                    try {
-                        if (window.Telegram && window.Telegram.WebApp) {
-                            window.Telegram.WebApp.sendData(JSON.stringify({ result: winSector.value }));
-                        }
-                    } catch (e) {
-                        console.error("Error sending data to bot:", e);
-                    }
-
-                    spinBtn.disabled = false;
+                    setTimeout(() => {
+                        showWinModal(actualWinSector, centerSlot);
+                        isSpinning = false;
+                    }, 1500);
                 }
             }
 
-            // Запускаем анимацию
-            requestAnimationFrame(animate);
+            animationFrameId = requestAnimationFrame(animate);
         }
 
-        // Инициализируем Telegram WebApp
-        try {
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.ready();
-                window.Telegram.WebApp.expand();
-            }
-        } catch (e) {
-            console.error("Error initializing Telegram WebApp:", e);
-        }
-
-        // Назначаем обработчик кнопки
         spinBtn.addEventListener('click', spinSlots);
-        
-        // Обработчик для сенсорных устройств
-        spinBtn.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            this.classList.add('active');
-        });
-        
-        spinBtn.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            this.classList.remove('active');
-        });
     });
 </script>
 </body>
